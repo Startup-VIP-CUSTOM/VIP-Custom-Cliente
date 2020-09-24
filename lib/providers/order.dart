@@ -7,6 +7,8 @@ class Order with ChangeNotifier {
   final String itemSelected;
   final String typeSelected;
   final String description;
+  final String store;
+  final String price;
 
   Order({
     this.id,
@@ -15,5 +17,7 @@ class Order with ChangeNotifier {
     @required this.itemSelected,
     @required this.typeSelected,
     @required this.description,
+    @required this.store,
+    @required this.price,
   });
 }

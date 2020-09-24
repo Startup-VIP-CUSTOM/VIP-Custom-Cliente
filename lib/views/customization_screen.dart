@@ -1,8 +1,9 @@
-import 'package:VipCustom/providers/order.dart';
-import 'package:VipCustom/providers/orders.dart';
+import 'package:VipCustom/providers/prices.dart';
 import 'package:VipCustom/utils/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:VipCustom/providers/order.dart';
+import 'package:VipCustom/providers/orders.dart';
 
 class CustomizationScreen extends StatefulWidget {
   @override
@@ -18,30 +19,16 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
   final _formOrders = Map<String, Object>();
   int selectedItem = 0;
   int selectedType = 0;
+  int selectedStore = 0;
+
+  String dropdownValue = 'One';
+
+  String priced = '0.00';
 
   @override
   void initState() {
     super.initState();
     _imageUrlFocusNode.addListener(_updateImage);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    if (_formOrders.isEmpty) {
-      final order = ModalRoute.of(context).settings.arguments as Order;
-
-      if (order != null) {
-        _formOrders['imageUrl'] = order.imageUrl;
-        _formOrders['size'] = order.size;
-        _formOrders['itemSelected'] = order.itemSelected;
-        _formOrders['typeSelected'] = order.typeSelected;
-        _formOrders['description'] = order.description;
-
-        _imageUrlController.text = _formOrders['imageUrl'];
-      }
-    }
   }
 
   void _updateImage() {
@@ -73,9 +60,11 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
     if (select == 1) {
       selectedItem = 1;
       _formOrders['itemSelected'] = 'camiseta';
+      _formOrders['size'] = '12';
     } else if (select == 2) {
       selectedItem = 2;
       _formOrders['itemSelected'] = 'chinelo';
+      _formOrders['size'] = '29-30';
     } else if (select == 3) {
       selectedItem = 3;
       _formOrders['itemSelected'] = 'mascara';
@@ -97,6 +86,23 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
     setState(() {});
   }
 
+  void chanceSelectorStore(int select) {
+    if (select == 1) {
+      selectedStore = 1;
+      _formOrders['store'] = 'Rainer';
+      _formOrders['price'] =
+          Prices().store1Tax(_formOrders['itemSelected']).toStringAsFixed(2);
+      priced = _formOrders['price'];
+    } else if (select == 2) {
+      selectedStore = 2;
+      _formOrders['store'] = 'João';
+      _formOrders['price'] =
+          Prices().store2Tax(_formOrders['itemSelected']).toStringAsFixed(2);
+      priced = _formOrders['price'];
+    }
+    setState(() {});
+  }
+
   Future<void> _saveForm() async {
     bool isValid = _form.currentState.validate();
 
@@ -107,29 +113,44 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
     _form.currentState.save();
 
     final order = Order(
-      id: _formOrders['id'],
+      //id: _formOrders['id'],
       imageUrl: _formOrders['imageUrl'],
       size: _formOrders['size'],
       itemSelected: _formOrders['itemSelected'],
       typeSelected: _formOrders['typeSelected'],
       description: _formOrders['description'],
+      price: _formOrders['price'],
+      store: _formOrders['store'],
     );
-
-    setState(() {});
 
     final orders = Provider.of<Orders>(context, listen: false);
 
-    print(_formOrders['id']);
-    print(_formOrders['imageUrl']);
-    print(_formOrders['size']);
-    print(_formOrders['itemSelected']);
-    print(_formOrders['typeSelected']);
-    print(_formOrders['description']);
+    print('id: ${_formOrders['id']}');
+    print('url: ${_formOrders['imageUrl']}');
+    print('tamanho: ${_formOrders['size']}');
+    print('item selecionado: ${_formOrders['itemSelected']}');
+    print('tipo do item: ${_formOrders['typeSelected']}');
+    print('descrição ${_formOrders['description']}');
+    print('preço: ${_formOrders['price']}');
+    print('loja: ${_formOrders['store']}');
 
-    //try {
-    await orders.addOrder(order);
-    Navigator.of(context).pushNamed(AppRoutes.CONFIRMATION_SCREEN);
-    /*} catch (error) {
+    try {
+      orders.addOrder(order);
+      await showDialog<Null>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text('Produto cadastrado com sucessor!'),
+          content:
+              Text('Parabéns, sua personalização foi encaminhada ao vendedor!'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Fechar'),
+              onPressed: () => Navigator.of(context).pushNamed(AppRoutes.HOME),
+            ),
+          ],
+        ),
+      );
+    } catch (error) {
       await showDialog<Null>(
         context: context,
         builder: (ctx) => AlertDialog(
@@ -143,7 +164,7 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
           ],
         ),
       );
-    }*/
+    }
   }
 
   @override
@@ -154,9 +175,10 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
       appBar: AppBar(
         title: Text('Customização'),
         backgroundColor: Colors.lightBlue[100],
+        centerTitle: true,
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.navigate_next),
+            icon: Icon(Icons.shopping_cart),
             onPressed: () {
               _saveForm();
             },
@@ -194,7 +216,7 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30)),
                           color: selectedItem == 1
-                              ? Colors.cyanAccent
+                              ? Colors.cyanAccent[100]
                               : Theme.of(context).accentColor,
                           child: Image.asset(
                             'assets/images/camiseta.png',
@@ -214,7 +236,7 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30)),
                           color: selectedItem == 2
-                              ? Colors.cyanAccent
+                              ? Colors.cyanAccent[100]
                               : Theme.of(context).accentColor,
                           child: Image.asset(
                             'assets/images/chinelo.png',
@@ -234,7 +256,7 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30)),
                           color: selectedItem == 3
-                              ? Colors.cyanAccent
+                              ? Colors.cyanAccent[100]
                               : Theme.of(context).accentColor,
                           child: Image.asset(
                             'assets/images/mascara.png',
@@ -249,12 +271,116 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
                   ],
                 ),
                 SizedBox(height: 25),
-                TextFormField(
-                  decoration: InputDecoration(
-                      labelText: 'Escreva o tamanho do seu produto:'),
-                  onSaved: (value) => _formOrders['size'] = value,
-                  validator: (value) => null,
-                ),
+                _formOrders['itemSelected'] == 'camiseta'
+                    ? DropdownButton<String>(
+                        value: _formOrders['size'],
+                        elevation: 16,
+                        style: TextStyle(color: Colors.deepPurple),
+                        underline: Container(
+                          height: 2,
+                          color: Colors.deepPurpleAccent,
+                        ),
+                        onChanged: (String newValue) {
+                          setState(() {
+                            _formOrders['size'] = newValue;
+                          });
+                        },
+                        items: <String>['12', '14', '16', 'P', 'M', 'G', 'GG']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      )
+                    : _formOrders['itemSelected'] == 'chinelo'
+                        // ? Column(
+                        //     children: [
+                        //       ListTile(
+                        //         title: const Text('32'),
+                        //         leading: Radio(
+                        //           value: '32',
+                        //           groupValue: _formOrders['size'],
+                        //           onChanged: (value) {
+                        //             setState(() {
+                        //               _formOrders['size'] = value;
+                        //             });
+                        //           },
+                        //         ),
+                        //       ),
+                        //       ListTile(
+                        //         title: const Text('35'),
+                        //         leading: Radio(
+                        //           value: '35',
+                        //           groupValue: _formOrders['size'],
+                        //           onChanged: (value) {
+                        //             setState(() {
+                        //               _formOrders['size'] = value;
+                        //             });
+                        //           },
+                        //         ),
+                        //       ),
+                        //       ListTile(
+                        //         title: const Text('40'),
+                        //         leading: Radio(
+                        //           value: '40',
+                        //           groupValue: _formOrders['size'],
+                        //           onChanged: (value) {
+                        //             setState(() {
+                        //               _formOrders['size'] = value;
+                        //             });
+                        //           },
+                        //         ),
+                        //       ),
+                        //       ListTile(
+                        //         title: const Text('42'),
+                        //         leading: Radio(
+                        //           value: '42',
+                        //           groupValue: _formOrders['size'],
+                        //           onChanged: (value) {
+                        //             setState(() {
+                        //               _formOrders['size'] = value;
+                        //             });
+                        //           },
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   )
+                        ? DropdownButton<String>(
+                            value: _formOrders['size'],
+                            elevation: 16,
+                            style: TextStyle(color: Colors.deepPurple),
+                            underline: Container(
+                              height: 2,
+                              color: Colors.deepPurpleAccent,
+                            ),
+                            onChanged: (String newValue) {
+                              setState(() {
+                                _formOrders['size'] = newValue;
+                              });
+                            },
+                            items: <String>[
+                              '29-30',
+                              '31-32',
+                              '33-34',
+                              '35-36',
+                              '37-38',
+                              '39-40',
+                              '41-42',
+                              '43-44'
+                            ].map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          )
+                        : TextFormField(
+                            decoration: InputDecoration(
+                                labelText: 'Escreva o tamanho do seu produto:'),
+                            onSaved: (value) => _formOrders['size'] = value,
+                            validator: (value) => null,
+                          ),
                 SizedBox(height: 25),
                 Text(
                   'Escolha o tipo de personalização:',
@@ -271,7 +397,7 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30)),
                           color: selectedType == 1
-                              ? Colors.cyanAccent
+                              ? Colors.cyanAccent[100]
                               : Theme.of(context).accentColor,
                           child: Text('Centro'),
                           onPressed: () => chanceSelectorType(1),
@@ -287,7 +413,7 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30)),
                           color: selectedType == 2
-                              ? Colors.cyanAccent
+                              ? Colors.cyanAccent[100]
                               : Theme.of(context).accentColor,
                           child: Text('Lado esquerdo'),
                           onPressed: () => chanceSelectorType(2),
@@ -303,7 +429,7 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30)),
                           color: selectedType == 3
-                              ? Colors.cyanAccent
+                              ? Colors.cyanAccent[100]
                               : Theme.of(context).accentColor,
                           child: Text('Lado direito'),
                           onPressed: () => chanceSelectorType(3),
@@ -369,22 +495,116 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
                   keyboardType: TextInputType.multiline,
                   onSaved: (value) => _formOrders['description'] = value,
                 ),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      RaisedButton(
-                        padding: EdgeInsets.all(15),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30)),
-                        color: Theme.of(context).accentColor,
-                        child: Text('Continuar'),
-                        onPressed: () {
-                          _saveForm();
-                        },
-                      ),
-                    ],
+                SizedBox(height: 25),
+                Text(
+                  'Escolha um vendedor:',
+                  style: TextStyle(fontSize: 18),
+                ),
+                SizedBox(height: 25),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Column(
+                      children: [
+                        RaisedButton(
+                          padding: EdgeInsets.all(deviceSize.width * 0.05),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30)),
+                          color: selectedStore == 1
+                              ? Colors.cyanAccent[100]
+                              : Theme.of(context).accentColor,
+                          child: Text('Loja 1'),
+                          onPressed: () => _formOrders['itemSelected'] != null
+                              ? chanceSelectorStore(1)
+                              : showDialog<Null>(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                    title: Text('Selecione uma produto!'),
+                                    content: Text(
+                                        'Você só pode escolher o vendedor após escolher o produto!'),
+                                    actions: <Widget>[
+                                      FlatButton(
+                                        child: Text('Fechar'),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(width: deviceSize.width * 0.3),
+                    Column(
+                      children: [
+                        RaisedButton(
+                          padding: EdgeInsets.all(deviceSize.width * 0.05),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30)),
+                          color: selectedStore == 2
+                              ? Colors.cyanAccent[100]
+                              : Theme.of(context).accentColor,
+                          child: Text('Loja dois'),
+                          onPressed: () => _formOrders['itemSelected'] != null
+                              ? chanceSelectorStore(2)
+                              : showDialog<Null>(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                    title: Text('Selecione uma produto!'),
+                                    content: Text(
+                                        'Você só pode escolher o vendedor após escolher o produto!'),
+                                    actions: <Widget>[
+                                      FlatButton(
+                                        child: Text('Fechar'),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 25),
+                Card(
+                  color: Colors.blue[100],
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Text(
+                            'Preço: R\$$priced',
+                            style: TextStyle(fontSize: 19),
+                          ),
+                        ),
+                        //SizedBox(height: 25),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 25),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              RaisedButton(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 100,
+                                  vertical: 15,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30)),
+                                color: Colors.lightGreenAccent[100],
+                                child: Text('Finalizar'),
+                                onPressed: () {
+                                  _saveForm();
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

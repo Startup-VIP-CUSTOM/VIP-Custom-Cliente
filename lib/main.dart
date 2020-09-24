@@ -1,8 +1,11 @@
+import 'package:VipCustom/providers/auth.dart';
 import 'package:VipCustom/providers/orders.dart';
+import 'package:VipCustom/providers/prices.dart';
 import 'package:VipCustom/utils/app_routes.dart';
-import 'package:VipCustom/views/confirmation_screen.dart';
+import 'package:VipCustom/views/auth_home_screen.dart';
+//import 'package:VipCustom/views/confirmation_screen.dart';
 import 'package:VipCustom/views/customization_screen.dart';
-import 'package:VipCustom/views/main_app.dart';
+import 'package:VipCustom/views/tabs_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +18,13 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
+          create: (_) => new Auth(),
+        ),
+        ChangeNotifierProvider(
           create: (_) => new Orders(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => new Prices(),
         ),
       ],
       child: MaterialApp(
@@ -26,9 +35,10 @@ class MyApp extends StatelessWidget {
           fontFamily: 'Raleway',
         ),
         routes: {
-          AppRoutes.HOME: (ctx) => MainApp(),
+          AppRoutes.AUTH_HOME: (ctx) => AuthOrHomeScreen(),
+          AppRoutes.HOME: (ctx) => TabsScreen(),
           AppRoutes.CUSTOMIZATION_SCREEN: (ctx) => CustomizationScreen(),
-          AppRoutes.CONFIRMATION_SCREEN: (ctx) => ConfirmationScreen(),
+          //AppRoutes.CONFIRMATION_SCREEN: (ctx) => ConfirmationScreen(),
         },
         //home: MainApp(),
       ),

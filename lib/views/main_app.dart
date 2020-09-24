@@ -10,11 +10,6 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(183, 255, 237, 0.9),
-      // appBar: AppBar(
-      //   centerTitle: true,
-      //   title: Text('VIP Custom'),
-      // ),
       drawer: Drawer(),
       body: Stack(
         children: [
@@ -55,7 +50,7 @@ class _MainAppState extends State<MainApp> {
                     color: Theme.of(context).accentColor,
                     child: Column(
                       children: [
-                        Icon(Icons.photo),
+                        Icon(Icons.format_paint),
                         SizedBox(height: 25),
                         Text(
                           'Bora personalizar?',
