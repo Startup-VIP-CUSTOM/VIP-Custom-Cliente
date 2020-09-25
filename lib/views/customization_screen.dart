@@ -113,7 +113,7 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
     _form.currentState.save();
 
     final order = Order(
-      //id: _formOrders['id'],
+      id: _formOrders['id'],
       imageUrl: _formOrders['imageUrl'],
       size: _formOrders['size'],
       itemSelected: _formOrders['itemSelected'],
@@ -123,19 +123,20 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
       store: _formOrders['store'],
     );
 
-    final orders = Provider.of<Orders>(context, listen: false);
+    setState(() {});
 
-    print('id: ${_formOrders['id']}');
-    print('url: ${_formOrders['imageUrl']}');
-    print('tamanho: ${_formOrders['size']}');
-    print('item selecionado: ${_formOrders['itemSelected']}');
-    print('tipo do item: ${_formOrders['typeSelected']}');
-    print('descrição ${_formOrders['description']}');
-    print('preço: ${_formOrders['price']}');
-    print('loja: ${_formOrders['store']}');
+    final orders = Provider.of<Orders>(context, listen: false);
 
     try {
       orders.addOrder(order);
+      print('id: ${_formOrders['id']}');
+      print('url: ${_formOrders['imageUrl']}');
+      print('tamanho: ${_formOrders['size']}');
+      print('item selecionado: ${_formOrders['itemSelected']}');
+      print('tipo do item: ${_formOrders['typeSelected']}');
+      print('descrição: ${_formOrders['description']}');
+      print('preço: ${_formOrders['price']}');
+      print('loja: ${_formOrders['store']}');
       await showDialog<Null>(
         context: context,
         builder: (ctx) => AlertDialog(
@@ -294,58 +295,6 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
                         }).toList(),
                       )
                     : _formOrders['itemSelected'] == 'chinelo'
-                        // ? Column(
-                        //     children: [
-                        //       ListTile(
-                        //         title: const Text('32'),
-                        //         leading: Radio(
-                        //           value: '32',
-                        //           groupValue: _formOrders['size'],
-                        //           onChanged: (value) {
-                        //             setState(() {
-                        //               _formOrders['size'] = value;
-                        //             });
-                        //           },
-                        //         ),
-                        //       ),
-                        //       ListTile(
-                        //         title: const Text('35'),
-                        //         leading: Radio(
-                        //           value: '35',
-                        //           groupValue: _formOrders['size'],
-                        //           onChanged: (value) {
-                        //             setState(() {
-                        //               _formOrders['size'] = value;
-                        //             });
-                        //           },
-                        //         ),
-                        //       ),
-                        //       ListTile(
-                        //         title: const Text('40'),
-                        //         leading: Radio(
-                        //           value: '40',
-                        //           groupValue: _formOrders['size'],
-                        //           onChanged: (value) {
-                        //             setState(() {
-                        //               _formOrders['size'] = value;
-                        //             });
-                        //           },
-                        //         ),
-                        //       ),
-                        //       ListTile(
-                        //         title: const Text('42'),
-                        //         leading: Radio(
-                        //           value: '42',
-                        //           groupValue: _formOrders['size'],
-                        //           onChanged: (value) {
-                        //             setState(() {
-                        //               _formOrders['size'] = value;
-                        //             });
-                        //           },
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   )
                         ? DropdownButton<String>(
                             value: _formOrders['size'],
                             elevation: 16,

@@ -9,6 +9,7 @@ class Order with ChangeNotifier {
   final String description;
   final String store;
   final String price;
+  final bool confirmation;
 
   Order({
     this.id,
@@ -19,5 +20,6 @@ class Order with ChangeNotifier {
     @required this.description,
     @required this.store,
     @required this.price,
+    this.confirmation = false,
   });
 }

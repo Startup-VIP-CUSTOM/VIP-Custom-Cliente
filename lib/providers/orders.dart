@@ -6,11 +6,12 @@ import 'package:http/http.dart' as http;
 import 'package:VipCustom/providers/order.dart';
 
 class Orders with ChangeNotifier {
-  final String _baseUrl = '${Constants.BASE_API_URL}/orders';
+  final String _baseUrl = '${Constants.BASE_API_URL}';
   List<Order> _items = [];
-  //String _token;
+  String _token;
+  String _userId;
 
-  Orders([/*this._token,*/ this._items = const []]);
+  Orders([this._token, this._userId, this._items = const []]);
 
   List<Order> get items => [..._items];
 
@@ -18,9 +19,9 @@ class Orders with ChangeNotifier {
     return _items.length;
   }
 
-  void addOrder(Order newOrder) /*async*/ {
-    /*final response = await */ http.post(
-      "$_baseUrl.json",
+  Future<void> addOrder(Order newOrder) async {
+    final response = await http.post(
+      "$_baseUrl/$_userId/orders.json?auth=$_token",
       body: json.encode({
         'imageUrl': newOrder.imageUrl,
         'size': newOrder.size,
@@ -29,13 +30,27 @@ class Orders with ChangeNotifier {
         'description': newOrder.description,
         'store': newOrder.store,
         'price': newOrder.price,
+        'confirmation': false,
       }),
     );
+
+    _items.add(Order(
+      id: json.decode(response.body)['name'],
+      imageUrl: newOrder.imageUrl,
+      size: newOrder.size,
+      itemSelected: newOrder.itemSelected,
+      typeSelected: newOrder.typeSelected,
+      description: newOrder.description,
+      store: newOrder.store,
+      price: newOrder.price,
+      confirmation: false,
+    ));
     notifyListeners();
   }
 
   Future<void> loadProducts() async {
-    final response = await http.get('$_baseUrl.json');
+    final response =
+        await http.get('$_baseUrl/$_userId/orders.json?auth=$_token');
     Map<String, dynamic> data = json.decode(response.body);
 
     _items.clear();
@@ -50,23 +65,11 @@ class Orders with ChangeNotifier {
           description: productData['description'],
           price: productData['price'],
           store: productData['store'],
+          confirmation: productData['confirmation'],
         ));
       });
       notifyListeners();
     }
     return Future.value();
   }
-
-  // void addOrderMemory(Order newOrder) {
-  //   _items.add(Order(
-  //     imageUrl: newOrder.imageUrl,
-  //     size: newOrder.size,
-  //     itemSelected: newOrder.itemSelected,
-  //     typeSelected: newOrder.typeSelected,
-  //     description: newOrder.description,
-  //     store: newOrder.store,
-  //     price: newOrder.price,
-  //   ));
-  //   notifyListeners();
-  // }
 }

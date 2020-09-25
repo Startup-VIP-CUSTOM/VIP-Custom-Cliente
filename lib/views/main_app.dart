@@ -1,5 +1,7 @@
+import 'package:VipCustom/providers/auth.dart';
 import 'package:VipCustom/utils/app_routes.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MainApp extends StatefulWidget {
   @override
@@ -10,7 +12,6 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(),
       body: Stack(
         children: [
           Container(
@@ -23,6 +24,43 @@ class _MainAppState extends State<MainApp> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 40,
+              horizontal: 20,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.exit_to_app),
+                  color: Colors.red,
+                  onPressed: () {
+                    showDialog<Null>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: Text('Sair'),
+                        content:
+                            Text('Tem certeza que deseja sair da sua conta?'),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: Text('Sim'),
+                            onPressed: () =>
+                                Provider.of<Auth>(context, listen: false)
+                                    .logout(),
+                          ),
+                          FlatButton(
+                            child: Text('Cancelar'),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
           Container(
