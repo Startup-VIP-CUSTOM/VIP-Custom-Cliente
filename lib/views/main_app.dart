@@ -46,11 +46,13 @@ class _MainAppState extends State<MainApp> {
                             Text('Tem certeza que deseja sair da sua conta?'),
                         actions: <Widget>[
                           FlatButton(
-                            child: Text('Sim'),
-                            onPressed: () =>
+                              child: Text('Sim'),
+                              onPressed: () {
                                 Provider.of<Auth>(context, listen: false)
-                                    .logout(),
-                          ),
+                                    .logout();
+                                Navigator.of(context)
+                                    .pushReplacementNamed(AppRoutes.AUTH_HOME);
+                              }),
                           FlatButton(
                             child: Text('Cancelar'),
                             onPressed: () => Navigator.of(context).pop(),

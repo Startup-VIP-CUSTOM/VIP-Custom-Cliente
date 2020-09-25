@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:VipCustom/exceptions/http_exeption.dart';
 import 'package:VipCustom/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -71,5 +72,50 @@ class Orders with ChangeNotifier {
       notifyListeners();
     }
     return Future.value();
+  }
+
+  //Daqui pra baixo nada é certeza
+
+  Future<void> updateProduct(Order order) async {
+    if (order == null || order.id == null) {
+      return;
+    }
+
+    final index = _items.indexWhere((prod) => prod.id == order.id);
+    if (index >= 0) {
+      await http.patch(
+        "$_baseUrl/$_userId/orders/${order.id}.json?auth=$_token",
+        body: json.encode({
+          'imageUrl': order.imageUrl,
+          'size': order.size,
+          'itemSelected': order.itemSelected,
+          'typeSelected': order.typeSelected,
+          'description': order.description,
+          'store': order.store,
+          'price': order.price,
+          'confirmation': order.confirmation,
+        }),
+      );
+      _items[index] = order;
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteProduct(String id) async {
+    final index = _items.indexWhere((prod) => prod.id == id);
+    if (index >= 0) {
+      final order = _items[index];
+      _items.remove(order);
+      notifyListeners();
+
+      final response = await http
+          .delete("$_baseUrl/$_userId/orders/${order.id}.json?auth=$_token");
+
+      if (response.statusCode >= 400) {
+        _items.insert(index, order);
+        notifyListeners();
+        throw HttpException('Ocorreu um erro na exclusão do produto.');
+      }
+    }
   }
 }
