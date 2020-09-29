@@ -18,11 +18,11 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
     //final deviceSize = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Pedidos'),
-        centerTitle: true,
-        backgroundColor: Colors.lightBlue[100],
-      ),
+      // appBar: AppBar(
+      //   title: Text('Pedidos'),
+      //   centerTitle: true,
+      //   backgroundColor: Colors.lightBlue[100],
+      // ),
       body: RefreshIndicator(
         onRefresh: () => _refreshProducts(context),
         child: FutureBuilder(

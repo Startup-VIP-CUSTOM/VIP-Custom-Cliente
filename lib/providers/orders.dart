@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:VipCustom/providers/order.dart';
 
 class Orders with ChangeNotifier {
-  final String _baseUrl = '${Constants.BASE_API_URL}';
+  final String _baseUrl = '${Constants.BASE_API_URL}/clients';
   List<Order> _items = [];
   String _token;
   String _userId;
@@ -24,6 +24,7 @@ class Orders with ChangeNotifier {
     final response = await http.post(
       "$_baseUrl/$_userId/orders.json?auth=$_token",
       body: json.encode({
+        'id': newOrder.id,
         'imageUrl': newOrder.imageUrl,
         'size': newOrder.size,
         'itemSelected': newOrder.itemSelected,
@@ -34,6 +35,8 @@ class Orders with ChangeNotifier {
         'confirmation': false,
       }),
     );
+
+    print(json.decode(response.body)['name']);
 
     _items.add(Order(
       id: json.decode(response.body)['name'],
