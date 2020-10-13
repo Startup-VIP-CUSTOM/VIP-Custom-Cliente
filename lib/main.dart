@@ -1,8 +1,10 @@
 import 'package:VipCustom/providers/auth.dart';
+import 'package:VipCustom/providers/client.dart';
 import 'package:VipCustom/providers/orders.dart';
 import 'package:VipCustom/providers/prices.dart';
 import 'package:VipCustom/utils/app_routes.dart';
 import 'package:VipCustom/views/auth_home_screen.dart';
+import 'package:VipCustom/views/complementation_screen.dart';
 //import 'package:VipCustom/views/confirmation_screen.dart';
 import 'package:VipCustom/views/customization_screen.dart';
 import 'package:VipCustom/views/tabs_screen.dart';
@@ -19,6 +21,14 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (_) => new Auth(),
+        ),
+        ChangeNotifierProxyProvider<Auth, Clients>(
+          create: (_) => new Clients(),
+          update: (ctx, auth, previousOrders) => new Clients(
+            auth.token,
+            auth.userId,
+            previousOrders.items,
+          ),
         ),
         ChangeNotifierProxyProvider<Auth, Orders>(
           create: (_) => new Orders(),
@@ -43,6 +53,7 @@ class MyApp extends StatelessWidget {
           AppRoutes.AUTH_HOME: (ctx) => AuthOrHomeScreen(),
           AppRoutes.HOME: (ctx) => TabsScreen(),
           AppRoutes.CUSTOMIZATION_SCREEN: (ctx) => CustomizationScreen(),
+          AppRoutes.COMPLEMENTATION_SCREEN: (ctx) => ComplementationScreen(),
           //AppRoutes.CONFIRMATION_SCREEN: (ctx) => ConfirmationScreen(),
         },
         //home: MainApp(),

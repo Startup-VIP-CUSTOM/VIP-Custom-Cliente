@@ -35,6 +35,13 @@ class _MainAppState extends State<MainApp> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 IconButton(
+                  icon: Icon(Icons.account_circle),
+                  color: Colors.black,
+                  onPressed: () => Navigator.of(context)
+                      .pushNamed(AppRoutes.COMPLEMENTATION_SCREEN),
+                ),
+                Spacer(),
+                IconButton(
                   icon: Icon(Icons.exit_to_app),
                   color: Colors.red,
                   onPressed: () {

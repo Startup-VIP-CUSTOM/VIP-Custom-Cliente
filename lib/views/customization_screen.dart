@@ -485,6 +485,7 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
                       ),
                       SizedBox(height: 25),
                       TextFormField(
+                        initialValue: _formOrders['description'],
                         decoration: InputDecoration(
                             labelText: 'Descrição do seu produto'),
                         maxLines: 5,
